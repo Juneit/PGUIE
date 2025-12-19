@@ -1,0 +1,152 @@
+model:
+  cldm:
+    target: diffbir.model.cldm_feautre_fusion.ControlLDM
+    params:
+      latent_scale_factor: 0.18215
+      unet_cfg:
+        use_checkpoint: True
+        image_size: 32 # unused
+        in_channels: 4
+        out_channels: 4
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_head_channels: 64 # need to fix for flash-attn
+        use_spatial_transformer: True
+        use_linear_in_transformer: True
+        transformer_depth: 1
+        context_dim: 1024
+        legacy: False
+      vae_cfg:
+        embed_dim: 4
+        ddconfig:
+          double_z: true
+          z_channels: 4
+          resolution: 256
+          in_channels: 3
+          out_ch: 3
+          ch: 128
+          ch_mult:
+          - 1
+          - 2
+          - 4
+          - 4
+          num_res_blocks: 2
+          attn_resolutions: []
+          dropout: 0.0
+        enable_feature_fusion: true
+        fusion_levels: [0,1,2,3]
+      clip_cfg:
+        embed_dim: 1024
+        vision_cfg:
+          image_size: 224
+          layers: 32
+          width: 1280
+          head_width: 80
+          patch_size: 14
+        text_cfg:
+          context_length: 77
+          vocab_size: 49408
+          width: 1024
+          heads: 16
+          layers: 24
+        layer: "penultimate"
+      controlnet_cfg:
+        use_checkpoint: True
+        image_size: 32 # unused
+        in_channels: 4
+        hint_channels: 4
+        model_channels: 320
+        attention_resolutions: [ 4, 2, 1 ]
+        num_res_blocks: 2
+        channel_mult: [ 1, 2, 4, 4 ]
+        num_head_channels: 64 # need to fix for flash-attn
+        use_spatial_transformer: True
+        use_linear_in_transformer: True
+        transformer_depth: 1
+        context_dim: 1024
+        legacy: False
+
+
+  diffusion:
+    target: diffbir.model.gaussian_diffusion.Diffusion
+    params:
+      linear_start: 0.00085
+      linear_end: 0.0120
+      timesteps: 1000
+      zero_snr: False
+      parameterization: eps
+
+dataset:
+  test:
+    target: diffbir.dataset.codeformer.CodeformerDataset
+    params:
+      file_list: 
+      lq_file_list: lq_files_shuf_val.list
+      gt_file_list: gt_files_shuf_val.list
+      file_backend_cfg:
+        target: diffbir.dataset.file_backend.HardDiskBackend
+      out_size: 256
+      crop_type: none
+      resize_type: bilinear
+      blur_kernel_size: 41
+      kernel_list: ['iso', 'aniso']
+      kernel_prob: [0.5, 0.5]
+      blur_sigma: [0.1, 12]
+      downsample_range: [1, 12]
+      noise_range: [0, 15]
+      jpeg_range: [30, 100]
+
+
+batch_transform:
+  target: diffbir.dataset.batch_transform.IdentityBatchTransform
+
+train:
+  # pretrained sd v2.1 path
+  sd_path: v2-1_512-ema-pruned.ckpt
+  # experiment directory path
+  exp_dir: exp
+
+  stage1_model_type: "dm_underwater" # "sceir" 或 "dm_underwater"
+  SCEIR_path: model.pthep145
+  DM_underwater_config: underwater.json
+  DM_underwater_path: I950000_E3369_gen.pth
+
+  learning_rate: 1e-4
+  batch_size: 2
+  num_workers: 1
+  train_steps: 30000
+  log_every: 100
+  ckpt_every: 1000
+  image_every: 100
+  val_every: 100
+  val_batches: 4
+  resume: ~
+  noise_aug_timestep: 0
+
+  train_mode: 'joint'
+  enable_feature_fusion: true
+  fusion_levels: [0,1,2,3]
+  
+
+  reconstruction_weight: 1
+  
+
+  vae_fusion_resume: ~
+  feature_db_path: feature_database
+
+  gradient_accumulation_steps: 2
+  lazy_load_features: false
+  retrieval_k: 1
+  memory_cleanup_frequency: 1000
+  enable_memory_monitoring: true
+
+inference:
+  batch_size: 1
+  num_workers: 2
+  steps: 20
+  cfg_scale: 1.0
+  out_size: 256
+  device: "cuda"
+  output_dir: "./test_results"
