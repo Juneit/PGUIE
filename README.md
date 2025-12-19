@@ -7,20 +7,13 @@ This repository contains the implementation of the paper
 ## Qualitative Comparison
 
 <p align="center">
-  <figure style="display:inline-block; margin:0 10px; text-align:center;">
-    <img src="assets/input_rgb.png" width="200"/>
-    <figcaption>Input</figcaption>
-  </figure>
-  <figure style="display:inline-block; margin:0 10px; text-align:center;">
-    <img src="assets/GT_rgb.png" width="200"/>
-    <figcaption>GT</figcaption>
-  </figure>
-  <figure style="display:inline-block; margin:0 10px; text-align:center;">
-    <img src="assets/ours_rgb.png" width="200"/>
-    <figcaption>Ours</figcaption>
-  </figure>
+  <img src="assets/input_rgb.png" width="30%" alt="Input"/>
+  <img src="assets/GT_rgb.png" width="30%" alt="GT"/>
+  <img src="assets/ours_rgb.png" width="30%" alt="Ours"/>
 </p>
-
+<p align="center">
+  From left to right are the input image, the ground truth, and the result of our method
+</p>
 
 ## Guide
 ### Env Prepare
@@ -58,3 +51,16 @@ Thanks for their awesome work.
 
 ## Citation
 If you find this work useful, please consider citing our paper.
+
+```bibtex
+@ARTICLE{PGUIE,
+  author={Zhu, Junhao and Zhu, Linwei and Tian, Tao and Wu, Wenhui and Cao, Jingchao},
+  journal={IEEE Signal Processing Letters}, 
+  title={Deep Feature Prior-Guided Conditional Diffusion Model for Underwater Image Enhancement}, 
+  year={2026},
+  volume={33},
+  number={},
+  pages={86-90},
+  keywords={Dictionaries;Diffusion models;Feature extraction;Training;Noise reduction;Image restoration;Image enhancement;Image color analysis;Semantics;Imaging;Underwater image enhancement;diffusion models;feature prior},
+  doi={10.1109/LSP.2025.3636452}}
+```
